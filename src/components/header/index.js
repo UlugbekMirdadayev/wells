@@ -12,7 +12,7 @@ const links = [
 ];
 
 export default function Header() {
-  const { search } = useLocation();
+  const { pathname } = useLocation();
   const navigate = useNavigate();
   const [opened, { toggle }] = useDisclosure(false);
   const [value, setValue] = useState('');
@@ -24,9 +24,9 @@ export default function Header() {
   ));
 
   const onSelect = (v) => {
-    if (search?.replace('?', '') === v) return null;
+    if (pathname === v) return null;
     setValue(v);
-    navigate(`/wells?${v}`);
+    navigate(`/wells/${v}`);
   };
 
   return (
@@ -49,7 +49,7 @@ export default function Header() {
             className={classes.search}
             placeholder="Izlash"
             leftSection={<IconSearch style={{ width: rem(16), height: rem(16) }} stroke={1.5} />}
-            data={['React', 'Angular', 'Vue', 'Next.js', 'Riot.js', 'Svelte', 'Blitz.js']}
+            data={['Namangan', 'Andijon', 'Fargona', 'Buxoro', 'Samarqand', 'A65', '388']}
             visibleFrom="xs"
             onOptionSubmit={onSelect}
           />

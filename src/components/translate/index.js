@@ -4,7 +4,7 @@ import locale from 'localization/locale.json';
 export const T = (id) => {
   const s = {};
   //  || useSelector((s) => s);
-  const lang = s.lang || 'ru';
+  const lang = s.lang || 'uz';
   const textTranslate = locale[lang][id] || id;
   return textTranslate;
 };
