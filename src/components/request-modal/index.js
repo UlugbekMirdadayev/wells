@@ -1,13 +1,12 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import { Modal, Button, Group, Box, NumberInput, TextInput, Textarea } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import axios from 'axios';
 import { sendBotMessage } from 'utils';
-// import { useLocation } from 'react-router-dom';
 
 export default function RequestModal() {
-  // const location = useLocation();
+  const phoneInput = useRef(null);
   const [opened, { open, close }] = useDisclosure(false);
   const [loading, setLoading] = useState(false);
 
@@ -50,6 +49,7 @@ export default function RequestModal() {
       <Box maw={340} mx="auto">
         <form onSubmit={form.onSubmit(onSubmit)}>
           <NumberInput
+            ref={phoneInput}
             label="Telefon raqamingizni qoldiring"
             style={{ marginTop: 20 }}
             placeholder="Hide controls"
@@ -67,6 +67,12 @@ export default function RequestModal() {
       </Box>
     );
   }
+
+  useEffect(() => {
+    if (opened) {
+      setTimeout(() => phoneInput.current?.focus(), 300);
+    }
+  }, [phoneInput, opened]);
   return (
     <>
       <Modal opened={opened} onClose={close} title="Ariza qoldirish" centered>
