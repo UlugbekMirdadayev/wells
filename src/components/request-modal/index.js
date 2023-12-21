@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import { Modal, Button, Group, Box, NumberInput, TextInput } from '@mantine/core';
+import { Modal, Button, Group, Box, NumberInput, TextInput, Textarea } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import axios from 'axios';
 import { sendBotMessage } from 'utils';
@@ -30,14 +30,15 @@ export default function RequestModal() {
       });
   }
 
-  const onSubmit = ({ phone, name }) => {
-    sendMessage(sendBotMessage({ phone, name, site: location.origin || window.location.origin }));
+  const onSubmit = ({ phone, name, comment }) => {
+    sendMessage(sendBotMessage({ phone, name, site: location.origin || window.location.origin, comment }));
   };
   function Form() {
     const form = useForm({
       initialValues: {
-        phone: '998996572600',
-        name: 'Ulugbek Mirdadayev'
+        phone: '998',
+        name: '',
+        comment: ''
       },
 
       validate: {
@@ -56,6 +57,7 @@ export default function RequestModal() {
             hideControls
           />
           <TextInput label="Ismingiz" mt={'lg'} {...form.getInputProps('name')} />
+          <Textarea maxLength={50} label="Murojaatingizni shu joyga yozib qoldiring" mt={'lg'} {...form.getInputProps('comment')} />
           <Group justify="flex-end" mt="md">
             <Button loading={loading} type="submit">
               Ariza qoldirish
