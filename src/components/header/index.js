@@ -32,7 +32,7 @@ export default function Header() {
   return (
     <header className={classes.header}>
       <div className={classes.inner}>
-        <NavLink to={'/'} className={classes.link}>
+        <NavLink to={'/'} className={classes.link} style={{ padding: 0 }}>
           <Group>
             <Burger opened={opened} onClick={toggle} size="sm" hiddenFrom="sm" />
             <p>Logo</p>
