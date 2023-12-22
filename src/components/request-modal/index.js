@@ -52,12 +52,18 @@ export default function RequestModal() {
             ref={phoneInput}
             label="Telefon raqamingizni qoldiring"
             style={{ marginTop: 20 }}
-            placeholder="Hide controls"
+            placeholder="Telefon raqamingizni qoldiring"
             {...form.getInputProps('phone')}
             hideControls
           />
-          <TextInput label="Ismingiz" mt={'lg'} {...form.getInputProps('name')} />
-          <Textarea maxLength={50} label="Murojaatingizni shu joyga yozib qoldiring" mt={'lg'} {...form.getInputProps('comment')} />
+          <TextInput label="Ismingiz" mt={'lg'} placeholder="Ismingiz" {...form.getInputProps('name')} />
+          <Textarea
+            maxLength={50}
+            label="Murojaatingizni shu joyga yozib qoldiring"
+            placeholder="Murojaatingizni shu joyga yozib qoldiring"
+            mt={'lg'}
+            {...form.getInputProps('comment')}
+          />
           <Group justify="flex-end" mt="md">
             <Button loading={loading} type="submit">
               Ariza qoldirish

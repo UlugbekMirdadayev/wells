@@ -1,12 +1,15 @@
 import { useParams } from 'react-router-dom';
-import { data } from 'utils/constants';
 import { Paper, Group, rem, Text, Container } from '@mantine/core';
 import { IconWaterpolo, IconTemperature, IconCookie } from '@tabler/icons-react';
 import classes from './wells.module.css';
+import { NotFound } from 'screens/404';
+import { useWells } from 'redux/selectors';
 
 const WellSingle = () => {
+  const data = useWells();
   const { id } = useParams();
   const item = data.find((well) => well.id === id);
+  if (!item?.level) return <NotFound />;
   const options = [
     { icon: IconWaterpolo, label: 'Suv yer sathidan', value: item.level },
     { icon: IconTemperature, label: 'Suv harorati', value: item.temperature },

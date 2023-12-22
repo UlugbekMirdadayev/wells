@@ -26,3 +26,32 @@
   font-size: var(--mantine-font-size-sm);
   font-weight: 500;
 }
+@media only screen and (max-width: 768px) {
+  .header {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .links {
+    position: fixed;
+    inset: 0;
+    background-color: var(--mantine-color-body);
+    margin: 0 !important;
+    z-index: -1;
+    transition: 300ms ease;
+  }
+  .links[opened='false'] {
+    flex-direction: column;
+    justify-content: center;
+    translate: 0 -100%;
+    opacity: 0;
+  }
+  .links[opened='true'] {
+    flex-direction: column;
+    justify-content: center;
+    opacity: 1;
+    translate: 0%;
+  }
+  .search {
+    width: 150px;
+  }
+}

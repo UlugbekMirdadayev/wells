@@ -1,9 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Table, ScrollArea, Text, TextInput, rem, keys } from '@mantine/core';
 import { IconBrandGoogleMaps, IconSearch } from '@tabler/icons-react';
 import Th from './th';
-import { useNavigate } from 'react-router-dom';
-import { data } from 'utils/constants';
+import { useWells } from 'redux/selectors';
 
 function filterData(data, search) {
   const query = search.toLowerCase().trim();
@@ -35,6 +35,7 @@ const openMap = (e, location) => {
 };
 
 export default function Wells() {
+  const data = useWells();
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [sortedData, setSortedData] = useState(data);
@@ -81,7 +82,7 @@ export default function Wells() {
         value={search}
         onChange={handleSearchChange}
       />
-      <ScrollArea maw={'100dvw'}>
+      <ScrollArea maw={'calc(100dvw - 32px)'}>
         <Table
           withTableBorder
           withColumnBorders
@@ -112,7 +113,7 @@ export default function Wells() {
               rows
             ) : (
               <Table.Tr>
-                <Table.Td colSpan={3}>
+                <Table.Td colSpan={4}>
                   <Text fw={500} ta="center">
                     Quduqlar topilmadi
                   </Text>
