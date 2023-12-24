@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { Paper, Group, rem, Text, Container } from '@mantine/core';
+import { Paper, Group, rem, Text } from '@mantine/core';
 import { IconWaterpolo, IconTemperature, IconCookie } from '@tabler/icons-react';
 import classes from './wells.module.css';
 import { NotFound } from 'screens/404';
@@ -31,9 +31,9 @@ const WellSingle = () => {
   return (
     <>
       <h1>{item.id}</h1>
-      <Container size={'sm'} className={classes.root}>
+      <div className={classes.root}>
         <Group style={{ flex: 1 }}>{stats}</Group>
-      </Container>
+      </div>
       <iframe
         title={item.id}
         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3011.09823629923!2d71.6054635!3d41.001222999999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38bb4b009b9e34c1%3A0xf4ee5dad5e4ec937!2s!5e0!3m2!1suz!2s!4v1703199882737!5m2!1suz!2s"

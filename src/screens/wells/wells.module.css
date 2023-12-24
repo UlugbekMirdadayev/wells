@@ -15,6 +15,7 @@
   padding: var(--mantine-spacing-xl);
   border-radius: var(--mantine-radius-md);
   display: flex;
+  width: 100%;
 }
 @media (max-width: 576px) {
   .root {

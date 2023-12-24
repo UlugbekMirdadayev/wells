@@ -9,7 +9,7 @@ const App = () => {
   return (
     <ScrollArea h={'100dvh'}>
       <Flex direction={'column'} h={'100dvh'} justify={'space-between'}>
-        <Container size={'xl'}>
+        <Container size={'xl'} w={'100%'}>
           <Header />
           <Routes>
             {routes.map((route) => (
