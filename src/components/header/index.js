@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Autocomplete, Group, Burger, rem } from '@mantine/core';
+import { Autocomplete, Group, Burger, rem, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useUser, useWells } from 'redux/selectors';
@@ -52,9 +52,11 @@ export default function Header() {
       <div className={classes.inner}>
         <Group>
           <Burger opened={opened} onClick={toggle} size="sm" hiddenFrom="sm" />
-          <NavLink to={'/'} className={classes.link} style={{ padding: 0 }}>
-            <p>Logo</p>
-          </NavLink>
+          <Text visibleFrom="sm" component="div">
+            <NavLink to={'/'} className={classes.link} style={{ padding: 0 }}>
+              <p>Sirdaryo Melio</p>
+            </NavLink>
+          </Text>
         </Group>
 
         <Group>

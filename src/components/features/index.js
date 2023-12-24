@@ -1,6 +1,7 @@
 import { ThemeIcon, Text, Title, Container, SimpleGrid, rem } from '@mantine/core';
 import { IconCookie, IconTemperature, IconMessage2, IconInfinity, IconBatteryEco, IconWaterpolo } from '@tabler/icons-react';
 import classes from './features.module.css';
+import { Link } from 'react-router-dom';
 
 export const MOCKDATA = [
   {
@@ -44,7 +45,7 @@ export default function Features() {
       <Text mt="sm" mb={7}>
         {feature.title}
       </Text>
-      <Text size="sm" c="dimmed" lh={1.6}>
+      <Text size="sm" c="dimmed" style={{ textWrap: 'balance' }} lh={1.6}>
         {feature.description}
       </Text>
     </div>
@@ -52,6 +53,11 @@ export default function Features() {
 
   return (
     <Container className={classes.wrapper}>
+      <Title size="sm" hiddenFrom="sm">
+        <Link to={'/wells'} className={classes.link}>
+          {"Barcha Quduqlarni Ko'rish"}
+        </Link>
+      </Title>
       <Title className={classes.title}>Xizmatlar</Title>
 
       <Container size={560} p={0}>

@@ -48,7 +48,16 @@ export default function AboutUs() {
           <Title className={classes.title} order={2}>
             Loyiha haqida qisqacha
           </Title>
-          <Text c="dimmed" mt={'lg'}>
+          <Text
+            c="dimmed"
+            mt={'lg'}
+            ta={'justify'}
+            style={{
+              textWrap: 'balance'
+            }}
+          >
+            Sirdaryo Melio suv kurilish MCHJ
+            <br />
             {`"Raqamli O'zbekiston 2030" strategiyasini tasdiqlash va uni samarali amalga oshirish qatorida, suv xo'jaligi boshqarmasida ham
             islohotli ishlar amalga oshirilmoqda. Binobarin O'zbekiston Respublikasi Prezidentining 2020-yil 10-iyuldagi PF-6024-son
             Farmoniga binoan suv resurslarini boshqarish tizimini takomillashtirish, suvdan foydalanish va suv iste'moli hisobini yuritishda

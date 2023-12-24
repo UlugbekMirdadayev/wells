@@ -3,8 +3,6 @@
   margin-bottom: 30px;
   background-color: var(--mantine-color-body);
   border-bottom: 1px solid var(--mantine-color-dark-4);
-  padding-left: var(--mantine-spacing-md);
-  padding-right: var(--mantine-spacing-md);
   position: sticky;
   top: 0;
   z-index: 5;
@@ -27,10 +25,6 @@
   font-weight: 500;
 }
 @media only screen and (max-width: 768px) {
-  .header {
-    padding-left: 0;
-    padding-right: 0;
-  }
   .links {
     position: fixed;
     inset: 0;
