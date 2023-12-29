@@ -1,15 +1,32 @@
+import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { Paper, Group, rem, Text } from '@mantine/core';
 import { IconWaterpolo, IconTemperature, IconCookie } from '@tabler/icons-react';
 import classes from './wells.module.css';
 import { NotFound } from 'screens/404';
-import { useWells } from 'redux/selectors';
+import { getWells } from 'api';
 
 const WellSingle = () => {
-  const data = useWells();
   const { id } = useParams();
-  const item = data.find((well) => well.id === id);
-  if (!item?.level) return <NotFound />;
+  const [item, setItem] = useState({});
+
+  const getData = useCallback(() => {
+    getWells(id)
+      .then(({ data }) => {
+        setItem(data);
+      })
+      .catch(({ message }) => {
+        console.log(message);
+      });
+  }, [id]);
+
+  useEffect(() => {
+    return () => {
+      getData();
+    };
+  }, [getData]);
+
+  if (!item?.well_id) return <NotFound />;
   const options = [
     { icon: IconWaterpolo, label: 'Suv yer sathidan', value: item.level },
     { icon: IconTemperature, label: 'Suv harorati', value: item.temperature },
@@ -35,11 +52,10 @@ const WellSingle = () => {
         <Group style={{ flex: 1 }}>{stats}</Group>
       </div>
       <iframe
-        title={item.id}
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3011.09823629923!2d71.6054635!3d41.001222999999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38bb4b009b9e34c1%3A0xf4ee5dad5e4ec937!2s!5e0!3m2!1suz!2s!4v1703199882737!5m2!1suz!2s"
         className={classes.iframe}
-        allowFullScreen
+        title={item.name}
         loading="lazy"
+        src={`https://maps.google.com/maps?q=${item.latitude},${item.longitude}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
       />
     </>
   );

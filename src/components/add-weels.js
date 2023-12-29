@@ -1,53 +1,99 @@
+/* eslint-disable react/prop-types */
+import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlus } from '@tabler/icons-react';
-import { useForm, isNotEmpty, isEmail, isInRange, hasLength, matches } from '@mantine/form';
-import { Modal, Button, Group, TextInput, NumberInput } from '@mantine/core';
+import { Modal, Button, TextInput, Group } from '@mantine/core';
+import { getWells, wellCreate, wellUpdate } from 'api';
+import { useCallback, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { setLoading } from 'redux/loading';
+import { setWells } from 'redux/wells';
+import { toast } from 'react-toastify';
 
-export default function AddWells() {
+export default function AddWells({ initialValues, id = null, onClose }) {
+  const dispatch = useDispatch();
   const [opened, { open, close }] = useDisclosure(false);
   const form = useForm({
-    initialValues: {
-      name: '',
-      job: '',
-      email: '',
-      favoriteColor: '',
-      age: 18
-    },
-
-    validate: {
-      name: hasLength({ min: 2, max: 10 }, 'Name must be 2-10 characters long'),
-      job: isNotEmpty('Enter your current job'),
-      email: isEmail('Invalid email'),
-      favoriteColor: matches(/^#([0-9a-f]{3}){1,2}$/, 'Enter a valid hex color'),
-      age: isInRange({ min: 18, max: 99 }, 'You must be 18-99 years old to register')
-    }
+    initialValues
   });
+  const setValue = form.setValues;
+  useEffect(() => {
+    if (id) {
+      open();
+      setValue(initialValues);
+    }
+  }, [initialValues, id, open, setValue]);
+
+  const getData = useCallback(() => {
+    dispatch(setLoading(true));
+    getWells()
+      .then(({ data }) => {
+        dispatch(setLoading(false));
+        dispatch(setWells(data));
+        close();
+      })
+      .catch(({ message }) => {
+        dispatch(setLoading(false));
+        console.log(message);
+      });
+  }, [dispatch, close]);
+
+  const onSubmit = (values) => {
+    dispatch(setLoading(true));
+    if (id) {
+      wellUpdate(id, values)
+        .then(({ data }) => {
+          console.log(data);
+          getData();
+        })
+        .catch((err) => {
+          toast.error(err.message || 'Xatolik');
+          dispatch(setLoading(false));
+          console.log(err);
+        });
+    } else {
+      wellCreate(values)
+        .then(({ data }) => {
+          console.log(data);
+          getData();
+          toast.success(data.message);
+        })
+        .catch((err) => {
+          toast.error(err.message || 'Xatolik');
+          dispatch(setLoading(false));
+          console.log(err);
+        });
+    }
+  };
 
   return (
     <>
-      <Modal opened={opened} onClose={close} title="Authentication" centered>
-        <form onSubmit={form.onSubmit}>
-          <TextInput label="Name" placeholder="Name" error withAsterisk {...form.getInputProps('name')} />
-          <TextInput label="Your job" placeholder="Your job" withAsterisk mt="md" {...form.getInputProps('job')} />
-          <TextInput label="Your email" placeholder="Your email" withAsterisk mt="md" {...form.getInputProps('email')} />
-          <TextInput
-            label="Your favorite color"
-            placeholder="Your favorite color"
-            withAsterisk
-            mt="md"
-            {...form.getInputProps('favoriteColor')}
-          />
-          <NumberInput label="Your age" placeholder="Your age" withAsterisk mt="md" {...form.getInputProps('age')} />
-
-          <Group justify="flex-end" mt="md">
-            <Button type="submit">Submit</Button>
+      <Modal
+        opened={opened}
+        onClose={() => {
+          close();
+          id && onClose();
+        }}
+        title={`Quduq${id ? 'ni yangilash' : ' yaratish'} `}
+        centered
+      >
+        <form onSubmit={form.onSubmit(onSubmit)}>
+          <TextInput label="Nomi" placeholder="Nomi" m={'md'} {...form.getInputProps('name')} />
+          <TextInput label="Telefon raqami" m={'md'} required withAsterisk placeholder="Telefon raqami" {...form.getInputProps('number')} />
+          <TextInput label="Manzil" placeholder="address" m={'md'} {...form.getInputProps('address')} />
+          <TextInput label="Latitude" placeholder="latitude" m={'md'} {...form.getInputProps('latitude')} />
+          <TextInput label="Longitude" placeholder="longitude" m={'md'} {...form.getInputProps('longitude')} />
+          <Group justify="flex-end">
+            <Button type="submit">{"Jo'natish"}</Button>
           </Group>
         </form>
       </Modal>
 
-      <Button onClick={open}>
-        <IconPlus size={16} /> {"Quduq qo'shish"}
-      </Button>
+      {id ? null : (
+        <Button onClick={open}>
+          <IconPlus size={16} /> {"Quduq qo'shish"}
+        </Button>
+      )}
     </>
   );
 }

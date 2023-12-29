@@ -20,7 +20,10 @@ export default function Footer() {
     <Container size={'xl'} className={classes.footer}>
       <div className={classes.inner}>
         <Title size="md" c="dimmed">
-          Sirdaryo Melio suv kurilish MCHJ <br /> © 2023 Tesla, Inc.
+          Sirdaryo Melio suv qurilish MCHJ <br /> © 2024 Algoritm, Inc.
+        </Title>
+        <Title size="md" c="dimmed" m={'lg'}>
+          Namangan viloyati, Namangan tumani, Sho‘rqo‘rg‘on MFY Bog‘bon ko‘chasi 2-uy.
         </Title>
         <Group className={classes.links}>{items}</Group>
       </div>

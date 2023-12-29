@@ -45,9 +45,25 @@ export default function AboutUs() {
     <div className={classes.wrapper}>
       <Grid gutter={80}>
         <Grid.Col span={{ base: 12, md: 5 }}>
-          <Title className={classes.title} order={2}>
-            Loyiha haqida qisqacha
+          <Title ta={'center'} className={classes.title} order={2}>
+            Kompaniya maqsadi
           </Title>
+
+          <Text
+            c="dimmed"
+            fw={700}
+            ta={'center'}
+            style={{
+              textWrap: 'balance'
+            }}
+            m={'lg'}
+          >
+            {`
+              Irrigasiya va melioratsiya ishlarini oliy sifatda bajarish orqali qishloq ho‘jaligini suv bilan
+              ta'minlash va uni iqtisod qilish masalasini xal etish.
+            `}
+          </Text>
+          <hr />
           <Text
             c="dimmed"
             mt={'lg'}
@@ -56,7 +72,6 @@ export default function AboutUs() {
               textWrap: 'balance'
             }}
           >
-            Sirdaryo Melio suv kurilish MCHJ
             <br />
             {`"Raqamli O'zbekiston 2030" strategiyasini tasdiqlash va uni samarali amalga oshirish qatorida, suv xo'jaligi boshqarmasida ham
             islohotli ishlar amalga oshirilmoqda. Binobarin O'zbekiston Respublikasi Prezidentining 2020-yil 10-iyuldagi PF-6024-son

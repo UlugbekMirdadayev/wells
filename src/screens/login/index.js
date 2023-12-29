@@ -4,18 +4,35 @@ import { useNavigate } from 'react-router-dom';
 import { TextInput, PasswordInput, Paper, Title, Container, Button } from '@mantine/core';
 import classes from './login.module.css';
 import { setUser } from 'redux/user';
+import { login, me } from 'api';
+import { getFormData } from 'utils';
 
 export default function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const form = useForm({
-    initialValues: { email: '', password: '' }
+    initialValues: { username: '', password: '' }
   });
   const onSubmit = (values) => {
-    console.log(values);
-    dispatch(setUser(values));
-    localStorage.setItem('user-data-web-site-wells', JSON.stringify(values));
-    navigate('/wells');
+    login(getFormData(values))
+      .then(({ data: { access_token } }) => {
+        me(access_token)
+          .then(({ data }) => {
+            dispatch(setUser(data));
+            localStorage.setItem('user-data-web-site-wells', access_token);
+            navigate('/wells');
+          })
+          .catch((err) => {
+            console.log('====================================');
+            console.log(err);
+            console.log('====================================');
+          });
+      })
+      .catch(({ response: { data } } = { data: {} }) => {
+        console.log('==============={err}=====================');
+        console.log(data);
+        console.log('==============={err}=====================');
+      });
   };
   return (
     <Container size={420} my={40}>
@@ -24,7 +41,7 @@ export default function Login() {
       </Title>
       <form onSubmit={form.onSubmit(onSubmit)}>
         <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-          <TextInput label="Email" placeholder="ok@mail.co" type="email" required {...form.getInputProps('email')} />
+          <TextInput label="Username" placeholder="ok@mail.co" type="text" required {...form.getInputProps('username')} />
           <PasswordInput label="Parolingiz" placeholder="Parolingizni kiriting" required mt="md" {...form.getInputProps('password')} />
           <Button type="submit" fullWidth mt="xl">
             Kirish
