@@ -14,7 +14,8 @@ import {
   Button,
   TextInput,
   PasswordInput,
-  Loader
+  Loader,
+  Tooltip
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
@@ -48,6 +49,7 @@ export default function ProfileSuperUser() {
       .catch((err) => {
         console.log('====================================');
         console.log(err);
+        toast.error(err?.message || 'Error');
         console.log('====================================');
       })
       .finally(() => dispatch(setLoading(false)));
@@ -61,25 +63,31 @@ export default function ProfileSuperUser() {
   const isUser = (item) => user.user_id === item.user_id;
 
   const handleUpdateUserStatus = (value, user_id) => {
+    dispatch(setLoading(true));
     console.log('====================================');
     console.log(value);
     console.log('====================================');
     updateUserStatus(user_id, value)
       .then(({ data }) => {
+        dispatch(setLoading(false));
         getAllUsers();
         toast.success(data?.message || '✅');
         onClose();
       })
       .catch((err) => {
+        dispatch(setLoading(false));
         console.log('====================================');
         console.log(err);
+        toast.error(err?.message || 'Error');
         console.log('====================================');
       });
   };
 
   const deleteUser = (user_id) => {
+    dispatch(setLoading(true));
     userDelete(user_id)
       .then(({ data }) => {
+        dispatch(setLoading(false));
         getAllUsers();
         toast.success(data?.message || '✅');
         onClose();
@@ -88,12 +96,19 @@ export default function ProfileSuperUser() {
         }
       })
       .catch((err) => {
+        dispatch(setLoading(false));
         console.log('====================================');
         console.log(err);
+        toast.error(err?.message || 'Error');
         console.log('====================================');
       });
   };
-
+  const noEditedForm = (userForm) =>
+    Boolean(
+      !Object.keys(form.values).filter((item) => {
+        return userForm?.[item]?.trimEnd() !== form.values?.[item]?.trimEnd();
+      }).length
+    );
   const rows = users
     .filter((user) => !isUser(user))
     .map((item, key) => (
@@ -168,30 +183,37 @@ export default function ProfileSuperUser() {
   };
 
   const onSubmit = (values) => {
+    dispatch(setLoading(true));
     if (editForm?.user) {
       updateUser(editForm?.user?.user_id, values)
         .then(({ data }) => {
+          dispatch(setLoading(false));
           getAllUsers();
           toast.success(data?.message || '✅');
           onClose();
           form.reset();
         })
         .catch((err) => {
+          dispatch(setLoading(false));
           console.log('====================================');
           console.log(err);
+          toast.error(err?.message || 'Error');
           console.log('====================================');
         });
     } else {
       createUser(values)
         .then(({ data }) => {
+          dispatch(setLoading(false));
           getAllUsers();
           toast.success(data?.message || '✅');
           onClose();
           form.reset();
         })
         .catch((err) => {
+          dispatch(setLoading(false));
           console.log('====================================');
           console.log(err);
+          toast.error(err?.message || 'Error');
           console.log('====================================');
         });
     }
@@ -203,7 +225,7 @@ export default function ProfileSuperUser() {
   };
 
   if (!user?.is_superuser) {
-    return <NotFound />;
+    return loading ? <Loader /> : <NotFound />;
   }
 
   return (
@@ -307,16 +329,20 @@ export default function ProfileSuperUser() {
             <TextInput mt={'md'} label="Ism" placeholder="ism" type="text" required {...form.getInputProps('name')} />
             <TextInput mt={'md'} label="Familiya" placeholder="surname" type="text" required {...form.getInputProps('surname')} />
             <TextInput mt={'md'} label="Username" placeholder="username" type="text" required {...form.getInputProps('username')} />
-            {!editForm.open && (
-              <PasswordInput mt={'md'} label="Parolingiz" placeholder="Parolingizni kiriting" {...form.getInputProps('password')} />
-            )}
-            <Button type="submit" fullWidth mt="xl">
-              {user?.user_id === editForm.user?.user_id
-                ? 'Profilni yangilash'
-                : editForm.open
-                ? "Nazoratchini ma'lumotini yangilash"
-                : 'Yangi nazoratchi tayinlash'}
-            </Button>
+            {!editForm.open && <PasswordInput mt={'md'} label="Parol" placeholder="Parol kiriting" {...form.getInputProps('password')} />}
+
+            <Tooltip
+              color={noEditedForm(editForm.user) ? 'red ' : 'blue'}
+              label={noEditedForm(editForm.user) ? "O'zgarish kiritilmagan" : 'Yuborish'}
+            >
+              <Button disabled={editForm.user?.user_id && noEditedForm(editForm.user)} type="submit" fullWidth mt="xl" loading={loading}>
+                {user?.user_id === editForm.user?.user_id
+                  ? 'Profilni yangilash'
+                  : editForm.open
+                  ? "Nazoratchini ma'lumotini yangilash"
+                  : 'Yangi nazoratchi tayinlash'}
+              </Button>
+            </Tooltip>
           </form>
         </Modal>
       </ScrollArea>
