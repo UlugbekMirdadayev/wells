@@ -30,6 +30,7 @@ export default function AddWells({ initialValues, id = null, onClose }) {
     }
   });
   const setValue = form.setValues;
+  const reset = form.reset;
   useEffect(() => {
     if (id) {
       open();
@@ -40,8 +41,8 @@ export default function AddWells({ initialValues, id = null, onClose }) {
         latitude: initialValues?.latitude,
         longitude: initialValues?.longitude
       });
-    }
-  }, [initialValues, id, open, setValue]);
+    } else reset();
+  }, [initialValues, id, open, setValue, reset]);
 
   const noEditedForm = useMemo(
     () =>

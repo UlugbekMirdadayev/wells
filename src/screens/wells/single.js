@@ -1,12 +1,14 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useState, useInsertionEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { Paper, Group, rem, Text } from '@mantine/core';
+import { Paper, Group, rem, Text, Loader } from '@mantine/core';
 import { IconWaterpolo, IconTemperature, IconCookie } from '@tabler/icons-react';
 import classes from './wells.module.css';
 import { NotFound } from 'screens/404';
 import { getWells } from 'api';
+import { useLoading } from 'redux/selectors';
 
 const WellSingle = () => {
+  const loading = useLoading();
   const { id } = useParams();
   const [item, setItem] = useState({});
 
@@ -20,13 +22,11 @@ const WellSingle = () => {
       });
   }, [id]);
 
-  useEffect(() => {
-    return () => {
-      getData();
-    };
+  useInsertionEffect(() => {
+    if (item.well_id) return undefined;
+    getData();
   }, [getData]);
-
-  if (!item?.well_id) return <NotFound />;
+  if (!item?.well_id) return loading ? <Loader /> : <NotFound />;
   const options = [
     { icon: IconWaterpolo, label: 'Suv yer sathidan', value: item.level },
     { icon: IconTemperature, label: 'Suv harorati', value: item.temperature },
@@ -47,7 +47,7 @@ const WellSingle = () => {
 
   return (
     <>
-      <h1>{item.id}</h1>
+      <h1>{item?.name}</h1>
       <div className={classes.root}>
         <Group style={{ flex: 1 }}>{stats}</Group>
       </div>

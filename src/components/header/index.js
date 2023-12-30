@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Autocomplete, Group, Burger, rem, Text } from '@mantine/core';
+import { Autocomplete, Group, Burger, rem, Text, Button } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useUser, useWells } from 'redux/selectors';
 import { useDispatch } from 'react-redux';
 import { setUser } from 'redux/user';
-import { IconSearch } from '@tabler/icons-react';
+import { IconLogout, IconSearch } from '@tabler/icons-react';
 import classes from './header.module.css';
 import AddWells from 'components/add-weels';
 import { getWells, me } from 'api';
@@ -58,15 +58,35 @@ export default function Header() {
       { link: '/wells', label: 'Quduqlar' },
       user?.user_id
         ? user?.is_superuser
-          ? { modal: false, link: '/profile', label: 'Profile' }
-          : null
+          ? { link: '/super-user-profile', label: 'Profile' }
+          : {
+              link: '#logout',
+              label: (
+                <Button color="red">
+                  <IconLogout />
+                  <Text>Chiqish</Text>
+                </Button>
+              ),
+              onclick: () => {
+                dispatch(setUser({}));
+                localStorage.clear();
+              }
+            }
         : { link: '/login', label: 'Nazorat' }
     ];
     return allLinks.filter(Boolean);
-  }, [user?.user_id, user?.is_superuser]);
+  }, [user?.user_id, user?.is_superuser, dispatch]);
 
   const items = links.map((link) => (
-    <NavLink key={link.link} to={link.link} className={classes.link} onClick={close}>
+    <NavLink
+      key={link.link}
+      to={link.link}
+      className={classes.link}
+      onClick={() => {
+        close();
+        link?.onclick && link.onclick();
+      }}
+    >
       {link.label}
     </NavLink>
   ));

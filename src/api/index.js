@@ -38,3 +38,10 @@ export const wellDelete = (id, config = {}) => {
   const request = axios.delete(`${BASE_URL}wells/${id}`, config);
   return request;
 };
+
+export const getUsers = () => axios.get(`${BASE_URL}users/`);
+export const createUser = (body, config = {}) => axios.post(`${BASE_URL}user/`, body, config);
+export const updateUser = (id, body, config = {}) => axios.patch(`${BASE_URL}user/${id}`, body, config);
+export const updateUserStatus = (id, status, config = {}) => axios.put(`${BASE_URL}user/${id}?is_superuser=${status}`, config);
+export const userDelete = (id, config = {}) => axios.delete(`${BASE_URL}user/${id}`, config);
+export const getStatistics = () => axios.get(`${BASE_URL}statistics/`);

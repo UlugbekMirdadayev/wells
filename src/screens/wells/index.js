@@ -3,13 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { Table, ScrollArea, Text, TextInput, rem, keys, Loader, Center, Button, Menu } from '@mantine/core';
 import { IconBrandGoogleMaps, IconEdit, IconSearch, IconTrash } from '@tabler/icons-react';
 import Th from './th';
-import { useLoading, useWells } from 'redux/selectors';
+import { useLoading, useUser, useWells } from 'redux/selectors';
 import { getWells, wellDelete } from 'api';
 import { useDispatch } from 'react-redux';
 import { setLoading } from 'redux/loading';
 import { toast } from 'react-toastify';
 import AddWells from 'components/add-weels';
 import { setWells } from 'redux/wells';
+import { sendDeletedWells } from 'utils';
+import { sendMessage } from 'components/request-modal';
 
 function filterData(data, search) {
   const query = search.toLowerCase().trim();
@@ -45,6 +47,7 @@ export default function Wells() {
   const dispatch = useDispatch();
   const loading = useLoading();
   const data = useWells();
+  const user = useUser();
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [sortedData, setSortedData] = useState(data);
@@ -83,12 +86,23 @@ export default function Wells() {
   };
 
   const deleteWell = useCallback(
-    (id) => {
+    (well) => {
       dispatch(setLoading(true));
-      wellDelete(id)
+      wellDelete(well?.well_id)
         .then(({ data }) => {
           toast.success(data.message);
           dispatch(setLoading(false));
+          sendMessage(
+            sendDeletedWells({
+              adminId: user?.user_id,
+              adminName: user?.name,
+              phone: well?.number,
+              wellName: well?.name,
+              wellId: well?.well_id
+            }),
+            setLoading,
+            close
+          );
           getData();
         })
         .catch((err) => {
@@ -96,7 +110,7 @@ export default function Wells() {
           dispatch(setLoading(false));
         });
     },
-    [dispatch, getData]
+    [dispatch, getData, user]
   );
 
   const rows = useMemo(
@@ -129,7 +143,7 @@ export default function Wells() {
                 <Text px={'lg'} py={'xs'} fw={600}>
                   {"O'chirilsinmi"}
                 </Text>
-                <Menu.Item bg={'#ff00003d'} onClick={() => deleteWell(row?.well_id)}>
+                <Menu.Item bg={'#ff00003d'} onClick={() => deleteWell(row)}>
                   Ha
                 </Menu.Item>
                 <Menu.Item mt={'sm'} bg={'#00ff002f'}>

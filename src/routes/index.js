@@ -3,6 +3,7 @@ import Home from 'screens/home';
 import Login from 'screens/login';
 import WellSingle from 'screens/wells/single';
 import { NotFound } from 'screens/404';
+import ProfileSuperUser from 'screens/profile';
 
 const routes = [
   {
@@ -21,6 +22,11 @@ const routes = [
     path: '/login',
     element: <Login />
   },
+  {
+    path: '/super-user-profile',
+    element: <ProfileSuperUser />
+  },
+
   {
     path: '*',
     element: <NotFound />
