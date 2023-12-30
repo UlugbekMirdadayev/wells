@@ -4,13 +4,14 @@ import { Paper, Group, rem, Text, Loader } from '@mantine/core';
 import { IconWaterpolo, IconTemperature, IconCookie } from '@tabler/icons-react';
 import classes from './wells.module.css';
 import { NotFound } from 'screens/404';
-import { getWells } from 'api';
+import { getStatistics, getWells } from 'api';
 import { useLoading } from 'redux/selectors';
 
 const WellSingle = () => {
   const loading = useLoading();
   const { id } = useParams();
   const [item, setItem] = useState({});
+  const [statistics, setStatistics] = useState([]);
 
   const getData = useCallback(() => {
     getWells(id)
@@ -20,10 +21,18 @@ const WellSingle = () => {
       .catch(({ message }) => {
         console.log(message);
       });
+    getStatistics()
+      .then(({ data }) => {
+        setStatistics(data);
+      })
+      .catch((err) => {
+        console.log('====================================');
+        console.log(err);
+        console.log('====================================');
+      });
   }, [id]);
 
   useInsertionEffect(() => {
-    if (item.well_id) return undefined;
     getData();
   }, [getData]);
   if (!item?.well_id) return loading ? <Loader /> : <NotFound />;
@@ -48,15 +57,18 @@ const WellSingle = () => {
   return (
     <>
       <h1>{item?.name}</h1>
+
       <div className={classes.root}>
         <Group style={{ flex: 1 }}>{stats}</Group>
       </div>
+
       <iframe
         className={classes.iframe}
         title={item.name}
         loading="lazy"
         src={`https://maps.google.com/maps?q=${item.latitude},${item.longitude}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
       />
+      <Text>Statistika {JSON.stringify(statistics)}</Text>
     </>
   );
 };
