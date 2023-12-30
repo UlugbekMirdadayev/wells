@@ -5,32 +5,32 @@ import { useForm } from '@mantine/form';
 import axios from 'axios';
 import { sendBotMessage } from 'utils';
 
+export function sendMessage(url, setLoading, close) {
+  setLoading(true);
+
+  axios({
+    method: 'get',
+    url
+  })
+    .then((response) => {
+      setLoading(false);
+      if (response.status === 200) {
+        close();
+      }
+    })
+    .catch((err) => {
+      setLoading(false);
+      console.log(err, '---');
+    });
+}
+
 export default function RequestModal() {
   const phoneInput = useRef(null);
   const [opened, { open, close }] = useDisclosure(false);
   const [loading, setLoading] = useState(false);
 
-  function sendMessage(url) {
-    setLoading(true);
-
-    axios({
-      method: 'get',
-      url
-    })
-      .then((response) => {
-        setLoading(false);
-        if (response.status === 200) {
-          close();
-        }
-      })
-      .catch((err) => {
-        setLoading(false);
-        console.log(err, '---');
-      });
-  }
-
   const onSubmit = ({ phone, name, comment }) => {
-    sendMessage(sendBotMessage({ phone, name, site: location.origin || window.location.origin, comment }));
+    sendMessage(sendBotMessage({ phone, name, site: location.origin || window.location.origin, comment }), setLoading, close);
   };
   function Form() {
     const form = useForm({

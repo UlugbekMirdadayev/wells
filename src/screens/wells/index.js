@@ -4,11 +4,12 @@ import { Table, ScrollArea, Text, TextInput, rem, keys, Loader, Center, Button, 
 import { IconBrandGoogleMaps, IconEdit, IconSearch, IconTrash } from '@tabler/icons-react';
 import Th from './th';
 import { useLoading, useWells } from 'redux/selectors';
-import { wellDelete } from 'api';
+import { getWells, wellDelete } from 'api';
 import { useDispatch } from 'react-redux';
 import { setLoading } from 'redux/loading';
 import { toast } from 'react-toastify';
 import AddWells from 'components/add-weels';
+import { setWells } from 'redux/wells';
 
 function filterData(data, search) {
   const query = search.toLowerCase().trim();
@@ -51,6 +52,19 @@ export default function Wells() {
   const [editModal, setEditModal] = useState({});
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
 
+  const getData = useCallback(() => {
+    dispatch(setLoading(true));
+    getWells()
+      .then(({ data }) => {
+        dispatch(setLoading(false));
+        dispatch(setWells(data));
+      })
+      .catch(({ message }) => {
+        dispatch(setLoading(false));
+        console.log(message);
+      });
+  }, [dispatch]);
+
   useEffect(() => {
     setSortedData(data);
   }, [data]);
@@ -75,13 +89,14 @@ export default function Wells() {
         .then(({ data }) => {
           toast.success(data.message);
           dispatch(setLoading(false));
+          getData();
         })
         .catch((err) => {
           toast.error(err.message || 'Xatolik');
           dispatch(setLoading(false));
         });
     },
-    [dispatch]
+    [dispatch, getData]
   );
 
   const rows = useMemo(
@@ -130,7 +145,7 @@ export default function Wells() {
 
   return (
     <>
-      {editModal?.well_id ? <AddWells onClose={() => setEditModal({})} id={editModal?.well_id} initialValues={editModal} /> : null}
+      <AddWells onClose={() => setEditModal({})} id={editModal?.well_id} initialValues={editModal} />
       <TextInput
         placeholder="Qidiruv barcha ma'lumotlar bo'yicha"
         mb="md"
@@ -179,7 +194,7 @@ export default function Wells() {
                 rows
               ) : (
                 <Table.Tr>
-                  <Table.Td colSpan={5}>
+                  <Table.Td colSpan={7}>
                     <Text fw={500} ta="center">
                       Quduqlar topilmadi
                     </Text>
