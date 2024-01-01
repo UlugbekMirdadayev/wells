@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { Autocomplete, Group, Burger, rem, Text, Button } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
@@ -11,6 +11,7 @@ import AddWells from 'components/add-weels';
 import { getWells, me } from 'api';
 import { setWells } from 'redux/wells';
 import { setLoading } from 'redux/loading';
+import { isPrivatRoute } from 'utils';
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -20,6 +21,8 @@ export default function Header() {
   const navigate = useNavigate();
   const [opened, { toggle, close }] = useDisclosure(false);
   const [value, setValue] = useState('');
+  // this variant no unical
+  const refLink = useRef(null);
 
   const getData = useCallback(() => {
     dispatch(setLoading(true));
@@ -35,22 +38,29 @@ export default function Header() {
   }, [dispatch]);
 
   useEffect(() => {
-    return () => {
-      const storageData = localStorage['user-data-web-site-wells'];
-      if (storageData) {
-        me(storageData)
-          .then(({ data }) => {
-            dispatch(setUser(data));
-          })
-          .catch((err) => {
-            console.log('====================================');
-            console.log(err);
-            console.log('====================================');
-          });
+    if (user?.user_id) return undefined;
+    const storageData = localStorage['user-data-web-site-wells'];
+    if (storageData) {
+      me(storageData)
+        .then(({ data }) => {
+          dispatch(setUser(data));
+        })
+        .catch((err) => {
+          console.log(err);
+          if (isPrivatRoute(pathname)) {
+            refLink.current.click();
+          }
+        });
+    } else {
+      if (isPrivatRoute(pathname)) {
+        refLink.current.click();
       }
-      getData();
-    };
-  }, [dispatch, getData]);
+    }
+  }, [dispatch, navigate, pathname, refLink, user?.user_id]);
+
+  useEffect(() => {
+    getData();
+  }, [getData]);
 
   const links = useMemo(() => {
     const allLinks = [
@@ -99,6 +109,7 @@ export default function Header() {
 
   return (
     <header className={classes.header}>
+      <NavLink ref={refLink} to={'/'} />
       <div className={classes.inner}>
         <Group>
           <Burger opened={opened} onClick={toggle} size="sm" hiddenFrom="sm" />

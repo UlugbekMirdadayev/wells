@@ -1,4 +1,4 @@
-import { useCallback, useInsertionEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Avatar,
   Table,
@@ -23,11 +23,13 @@ import { IconPencil, IconTrash, IconArrowBackUp, IconUserPlus, IconLogout, IconC
 import { useLoading, useUser, useUsers } from 'redux/selectors';
 import { useDispatch } from 'react-redux';
 import { setUsers } from 'redux/users';
-import { createUser, getUsers, updateUser, updateUserStatus, userDelete } from 'api';
+import { createUser, getUsers, me, updateUser, updateUserStatus, userDelete } from 'api';
 import { toast } from 'react-toastify';
 import { setLoading } from 'redux/loading';
 import { setUser } from 'redux/user';
-import { NotFound } from 'screens/404';
+import { userUpdateMessage, userStatusMessage, userDeletedMessage } from 'utils';
+import { sendMessage } from 'components/request-modal';
+import { useSearchParams } from 'react-router-dom';
 
 const rolesData = [
   { value: 'true', label: 'SuperAdmin' },
@@ -35,44 +37,57 @@ const rolesData = [
 ];
 
 export default function ProfileSuperUser() {
+  const [searchParams] = useSearchParams();
   const dispatch = useDispatch();
   const user = useUser();
   const loading = useLoading();
   const [opened, { open, close }] = useDisclosure(false);
   const [editForm, setEditForm] = useState({ open: false });
   const users = useUsers();
+  const [menuOpened, setMenuOpened] = useState(false);
 
   const getAllUsers = useCallback(() => {
-    dispatch(setLoading(true));
-    getUsers()
-      .then(({ data }) => dispatch(setUsers(data)))
-      .catch((err) => {
-        console.log('====================================');
-        console.log(err);
-        toast.error(err?.message || 'Error');
-        console.log('====================================');
-      })
-      .finally(() => dispatch(setLoading(false)));
-  }, [dispatch]);
+    if (user?.is_superuser) {
+      dispatch(setLoading(true));
+      getUsers()
+        .then(({ data }) => dispatch(setUsers(data)))
+        .catch((err) => {
+          console.log('====================================');
+          console.log(err);
+          toast.error(err?.message || 'Error');
+          console.log('====================================');
+        })
+        .finally(() => dispatch(setLoading(false)));
+    }
+  }, [dispatch, user?.is_superuser]);
 
-  useInsertionEffect(() => {
-    if (users?.length) return undefined;
-    getAllUsers();
+  useEffect(() => {
+    if (!users?.length) getAllUsers();
   }, [getAllUsers, users?.length]);
 
   const isUser = (item) => user.user_id === item.user_id;
 
-  const handleUpdateUserStatus = (value, user_id) => {
+  const handleUpdateUserStatus = (value, _user) => {
     dispatch(setLoading(true));
     console.log('====================================');
     console.log(value);
     console.log('====================================');
-    updateUserStatus(user_id, value)
+    updateUserStatus(user?.user_id, value)
       .then(({ data }) => {
         dispatch(setLoading(false));
         getAllUsers();
         toast.success(data?.message || '✅');
         onClose();
+        sendMessage(
+          userStatusMessage({
+            superAdminUsername: user?.username,
+            adminName: _user?.name + ' ' + _user?.surname,
+            adminUsername: _user?.username,
+            status: rolesData.find((item) => item?.value === value)?.label
+          }),
+          setLoading,
+          close
+        );
       })
       .catch((err) => {
         dispatch(setLoading(false));
@@ -83,16 +98,19 @@ export default function ProfileSuperUser() {
       });
   };
 
-  const deleteUser = (user_id) => {
+  const deleteUser = (_user) => {
     dispatch(setLoading(true));
-    userDelete(user_id)
+    userDelete(_user?.user_id)
       .then(({ data }) => {
         dispatch(setLoading(false));
         getAllUsers();
         toast.success(data?.message || '✅');
         onClose();
-        if (user?.user_id === user_id) {
+        if (user?.user_id === _user?.user_id) {
+          sendMessage(userDeletedMessage({ user: null, admin: user }), setLoading, close);
           window.location.reload();
+        } else {
+          sendMessage(userDeletedMessage({ user: _user, admin: user }), setLoading, close);
         }
       })
       .catch((err) => {
@@ -103,16 +121,22 @@ export default function ProfileSuperUser() {
         console.log('====================================');
       });
   };
+
   const noEditedForm = (userForm) =>
     Boolean(
       !Object.keys(form.values).filter((item) => {
         return userForm?.[item]?.trimEnd() !== form.values?.[item]?.trimEnd();
       }).length
     );
+
   const rows = users
     .filter((user) => !isUser(user))
     .map((item, key) => (
-      <Table.Tr key={item.name + key} bg={isUser(item) ? 'var(--mantine-color-dark-5)' : undefined}>
+      <Table.Tr
+        id={item?.username}
+        key={item.name + key}
+        bg={searchParams.get('username') === item?.username ? 'var(--mantine-color-dark-5)' : undefined}
+      >
         <Table.Td>
           <Group gap="sm">
             <Avatar />
@@ -127,7 +151,7 @@ export default function ProfileSuperUser() {
           <Select
             data={rolesData}
             defaultValue={String(item.is_superuser)}
-            onChange={(value) => handleUpdateUserStatus(value, item?.user_id)}
+            onChange={(value) => handleUpdateUserStatus(value, item)}
             variant="unstyled"
             allowDeselect={false}
           />
@@ -148,7 +172,7 @@ export default function ProfileSuperUser() {
                   {"Yo'q"}
                 </Menu.Item>
                 <Menu.Item
-                  onClick={() => deleteUser(item?.user_id)}
+                  onClick={() => deleteUser(item)}
                   c={'red'}
                   leftSection={<IconTrash style={{ width: rem(16), height: rem(16) }} stroke={1.5} />}
                 >
@@ -188,7 +212,28 @@ export default function ProfileSuperUser() {
       updateUser(editForm?.user?.user_id, values)
         .then(({ data }) => {
           dispatch(setLoading(false));
-          getAllUsers();
+          if (editForm?.user?.user_id === user?.user_id) {
+            const storageData = localStorage['user-data-web-site-wells'];
+            me(storageData)
+              .then(({ data }) => {
+                dispatch(setUser(data));
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          } else {
+            getAllUsers();
+          }
+          sendMessage(
+            userUpdateMessage({
+              adminName: values?.name + ' ' + values?.surname,
+              adminUsername: values?.username,
+              thisUser: editForm?.user?.user_id === user?.user_id,
+              user
+            }),
+            setLoading,
+            close
+          );
           toast.success(data?.message || '✅');
           onClose();
           form.reset();
@@ -219,14 +264,33 @@ export default function ProfileSuperUser() {
     }
   };
 
+  useEffect(() => {
+    if (searchParams.get('username') === user?.username) {
+      setMenuOpened(true);
+    } else {
+      const scrollToHashElement = () => {
+        const elementToScroll = document.getElementById(searchParams.get('username'));
+
+        if (!elementToScroll) return;
+
+        elementToScroll.scrollIntoView({
+          block: 'start',
+          behavior: 'smooth'
+        });
+      };
+
+      setTimeout(() => {
+        scrollToHashElement();
+      }, 1000);
+      window.addEventListener('DOMContentLoaded', scrollToHashElement);
+      return window.removeEventListener('DOMContentLoaded', scrollToHashElement);
+    }
+  }, [searchParams, user?.username]);
+
   const logOut = () => {
     dispatch(setUser({}));
     localStorage.clear();
   };
-
-  if (!user?.is_superuser) {
-    return loading ? <Loader /> : <NotFound />;
-  }
 
   return (
     <>
@@ -234,7 +298,14 @@ export default function ProfileSuperUser() {
         <Title c="dimmed" my={'md'}>
           {"Nazoratchilar ro'yxati"}
         </Title>
-        <Menu transitionProps={{ transition: 'pop' }} withArrow position="bottom-end" withinPortal>
+        <Menu
+          transitionProps={{ transition: 'pop' }}
+          opened={menuOpened}
+          onChange={setMenuOpened}
+          withArrow
+          position="bottom-end"
+          withinPortal
+        >
           <Menu.Target>
             <Group>
               <Avatar radius="xl" />
@@ -262,7 +333,7 @@ export default function ProfileSuperUser() {
               Akkauntdan chiqish
             </Menu.Item>
             <Menu.Item
-              onClick={() => deleteUser(user?.user_id)}
+              onClick={() => deleteUser(user)}
               c={'red'}
               leftSection={<IconLogout style={{ width: rem(16), height: rem(16) }} stroke={1.5} />}
             >

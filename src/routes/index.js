@@ -7,6 +7,7 @@ import ProfileSuperUser from 'screens/profile';
 
 const routes = [
   {
+    index: true,
     path: '/',
     element: <Home />
   },

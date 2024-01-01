@@ -15,7 +15,7 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <MantineProvider defaultColorScheme="dark">
-        <ToastContainer autoClose={200} />
+        <ToastContainer autoClose={200} pauseOnHover />
         <Provider store={store}>
           <style>
             {`:root[data-mantine-color-scheme='dark'] {
