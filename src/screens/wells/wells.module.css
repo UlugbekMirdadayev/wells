@@ -14,11 +14,11 @@
   background-image: linear-gradient(-60deg, var(--mantine-color-blue-4) 0%, var(--mantine-color-blue-7) 100%);
   padding: var(--mantine-spacing-xl);
   border-radius: var(--mantine-radius-md);
-  display: flex;
   width: 100%;
 }
 @media (max-width: 576px) {
   .root {
+    display: flex;
     flex-direction: column;
   }
 }
