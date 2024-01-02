@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { Carousel } from '@mantine/carousel';
 import { useMediaQuery } from '@mantine/hooks';
 import {
@@ -8,6 +9,7 @@ import {
 } from '@mantine/core';
 import classes from './carousel.module.css';
 import '@mantine/carousel/styles.css';
+import Autoplay from 'embla-carousel-autoplay';
 
 const data = [
   {
@@ -43,6 +45,7 @@ const data = [
 ];
 
 export default function CardsCarousel() {
+  const autoplay = useRef(Autoplay({ delay: 2000 }));
   const theme = useMantineTheme();
   const mobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
   const slides = data.map((item) => (
@@ -70,6 +73,10 @@ export default function CardsCarousel() {
       slideGap={{ base: rem(2), sm: 'xl' }}
       align="start"
       slidesToScroll={mobile ? 1 : 2}
+      plugins={[autoplay.current]}
+      loop
+      onMouseEnter={autoplay.current.stop}
+      onMouseLeave={autoplay.current.play}
     >
       {slides}
     </Carousel>

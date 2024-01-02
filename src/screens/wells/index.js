@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Table, ScrollArea, Text, TextInput, rem, keys, Loader, Center, Button, Menu } from '@mantine/core';
+import { Table, ScrollArea, Text, TextInput, rem, keys, Loader, Center, Button, Menu, Tooltip, Flex } from '@mantine/core';
 import { IconBrandGoogleMaps, IconEdit, IconSearch, IconTrash } from '@tabler/icons-react';
 import Th from './th';
 import { useLoading, useUser, useWells } from 'redux/selectors';
@@ -127,33 +127,44 @@ export default function Wells() {
             <IconBrandGoogleMaps />
           </Table.Td>
           <Table.Td>
-            <Button onClick={() => setEditModal(row)}>
-              <IconEdit />
-            </Button>
+            <Tooltip
+              color={!user?.user_id ? 'red ' : 'blue'}
+              label={user?.user_id ? "Quduq ma'lumotini o'zgartirish" : 'Faqat nazoratchilar uchun'}
+            >
+              <Flex justify={'center'}>
+                <Button disabled={!user?.user_id} onClick={() => setEditModal(row)}>
+                  <IconEdit />
+                </Button>
+              </Flex>
+            </Tooltip>
           </Table.Td>
           <Table.Td>
-            <Menu position="right" openDelay={100} closeDelay={400}>
-              <Menu.Target>
-                <Button color="red">
-                  <IconTrash />
-                </Button>
-              </Menu.Target>
-              <Menu.Dropdown title="Ochirilsinmi">
-                <Text px={'lg'} py={'xs'} fw={600}>
-                  {"O'chirilsinmi"}
-                </Text>
-                <Menu.Item bg={'#ff00003d'} onClick={() => deleteWell(row)}>
-                  Ha
-                </Menu.Item>
-                <Menu.Item mt={'sm'} bg={'#00ff002f'}>
-                  {"Yo'q"}
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
+            <Tooltip color={'red '} label={user?.user_id ? "Quduqni o'chirish" : 'Faqat nazoratchilar uchun'}>
+              <Flex justify={'center'}>
+                <Menu position="right" openDelay={100} closeDelay={400}>
+                  <Menu.Target disabled={!user?.user_id}>
+                    <Button color="red">
+                      <IconTrash />
+                    </Button>
+                  </Menu.Target>
+                  <Menu.Dropdown title="Ochirilsinmi">
+                    <Text px={'lg'} py={'xs'} fw={600}>
+                      {"O'chirilsinmi"}
+                    </Text>
+                    <Menu.Item bg={'#ff00003d'} c={'red'} onClick={() => deleteWell(row)}>
+                      Ha
+                    </Menu.Item>
+                    <Menu.Item mt={'sm'} bg={'#00ff002f'}>
+                      {"Yo'q"}
+                    </Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
+              </Flex>
+            </Tooltip>
           </Table.Td>
         </Table.Tr>
       )),
-    [sortedData, deleteWell]
+    [sortedData, deleteWell, user?.user_id]
   );
 
   return (

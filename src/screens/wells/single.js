@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { Paper, Group, rem, Text, Loader, Button } from '@mantine/core';
@@ -45,14 +45,16 @@ const WellSingle = () => {
       });
   }, [dispatch]);
 
+  const isWellStatistics = useMemo(() => statistics.filter((stat) => stat?.number === item?.number), [item?.number, statistics]);
+
   useEffect(() => {
     getData();
     getStat();
   }, [getData, getStat]);
   const options = [
-    { icon: IconWaterpolo, label: 'Suv yer sathidan', value: statistics[index]?.water_level },
-    { icon: IconTemperature, label: 'Suv harorati', value: statistics[index]?.temperature },
-    { icon: IconCookie, label: "Sho'rlanish darajasi", value: statistics[index]?.salinity }
+    { icon: IconWaterpolo, label: 'Suv yer sathidan', value: isWellStatistics[index]?.water_level },
+    { icon: IconTemperature, label: 'Suv harorati', value: isWellStatistics[index]?.temperature },
+    { icon: IconCookie, label: "Sho'rlanish darajasi", value: isWellStatistics[index]?.salinity }
   ];
 
   const stats = options.map((well) => (
@@ -77,11 +79,11 @@ const WellSingle = () => {
           <Group style={{ flex: 1 }}>
             <Group display={'grid'} ta={'center'} c={'#fff'}>
               <Button
-                disabled={index + 1 === statistics?.length}
+                disabled={!isWellStatistics?.length || index + 1 === isWellStatistics?.length}
                 color={'green'}
                 onClick={() =>
                   setIndex((_index) => {
-                    if (_index + 1 === statistics?.length) {
+                    if (_index + 1 === isWellStatistics?.length) {
                       return _index;
                     }
                     return _index + 1;
@@ -90,10 +92,10 @@ const WellSingle = () => {
               >
                 <IconArrowUp />
               </Button>
-              <Text>{moment(statistics[index]?.time).format('DD/MM/YYYY')}</Text>
-              <Text>{moment(statistics[index]?.time).format('HH:MM:SS')}</Text>
+              <Text>{moment(isWellStatistics[index]?.time).format('DD/MM/YYYY')}</Text>
+              <Text>{moment(isWellStatistics[index]?.time).format('HH:MM:SS')}</Text>
               <Button
-                disabled={index === 0}
+                disabled={!isWellStatistics?.length || index === 0}
                 color={'green'}
                 onClick={() =>
                   setIndex((_index) => {

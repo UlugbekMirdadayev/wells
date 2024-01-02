@@ -108,6 +108,18 @@ export default function AddWells({ initialValues, id = null, onClose }) {
     }
   };
 
+  function formatTelephoneNumber(phoneNumber) {
+    const cleaned = phoneNumber.replace(/\D/g, ''); // Faqat raqamni olish
+
+    // Formatlash
+    const formatted = `+${cleaned.slice(0, 3)} (${cleaned.slice(3, 5)}) ${cleaned.slice(5, 8)}-${cleaned.slice(8, 10)}-${cleaned.slice(
+      10,
+      12
+    )}`;
+
+    return formatted;
+  }
+
   return (
     <>
       <Modal
@@ -121,14 +133,36 @@ export default function AddWells({ initialValues, id = null, onClose }) {
       >
         <form onSubmit={form.onSubmit(onSubmit)}>
           <TextInput label="Nomi" placeholder="Nomi" m={'md'} {...form.getInputProps('name')} />
-          <TextInput
-            label="Telefon raqami"
-            type="number"
-            m={'md'}
-            withAsterisk
-            placeholder="Telefon raqami"
-            {...form.getInputProps('number')}
-          />
+          <div className="caret-label" style={{ position: 'relative' }}>
+            <p
+              style={{
+                display: form.getInputProps('number').error ? 'none' : 'inline-block',
+                position: 'absolute',
+                zIndex: [3, 5, 8, 10, 12].includes(form.getInputProps('number')?.value?.length) ? 2 : -1,
+                bottom: '-10px',
+                left: '29px',
+                right: '30px',
+                height: '25px',
+                pointerEvents: 'none',
+                background: '#2e2e2e',
+                fontSize: 'var(--_input-fz,var(--input-fz,var(--mantine-font-size-sm)))'
+              }}
+            >
+              {formatTelephoneNumber(form.getInputProps('number').value)}
+              <span className="custom-caret">|</span>
+            </p>
+            <TextInput
+              label="Telefon raqami"
+              type="number"
+              m={'md'}
+              withAsterisk
+              placeholder={'+998 (77) 123-45-67'}
+              {...form.getInputProps('number')}
+              onChange={(e) => {
+                e.target.value?.length > 12 ? null : form.getInputProps('number')?.onChange(e);
+              }}
+            />
+          </div>
           <TextInput label="Manzil" placeholder="address" m={'md'} {...form.getInputProps('address')} />
           <TextInput label="Latitude" placeholder="latitude" m={'md'} {...form.getInputProps('latitude')} />
           <TextInput label="Longitude" placeholder="longitude" m={'md'} {...form.getInputProps('longitude')} />

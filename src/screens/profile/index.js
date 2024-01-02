@@ -68,6 +68,7 @@ export default function ProfileSuperUser() {
   const isUser = (item) => user.user_id === item.user_id;
 
   const handleUpdateUserStatus = (value, _user) => {
+    if (String(_user?.is_superuser) === value) return null;
     dispatch(setLoading(true));
     console.log('====================================');
     console.log(value);
