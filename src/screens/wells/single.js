@@ -1,19 +1,18 @@
-import { useState, useLayoutEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { Paper, Group, rem, Text, Loader, Button } from '@mantine/core';
 import { IconWaterpolo, IconTemperature, IconCookie, IconArrowUp, IconArrowDown } from '@tabler/icons-react';
 import classes from './wells.module.css';
-import { NotFound } from 'screens/404';
 import { getStatistics, getWells } from 'api';
-import { useLoading, useStatistics } from 'redux/selectors';
+import { useStatistics } from 'redux/selectors';
 import { setStatistics } from 'redux/statistics';
 import moment from 'moment';
+import { NotFound } from 'screens/404';
 
 const WellSingle = () => {
   const dispatch = useDispatch();
   const statistics = useStatistics();
-  const loading = useLoading();
   const { id } = useParams();
   const [item, setItem] = useState({});
   const [index, setIndex] = useState(0);
@@ -46,14 +45,10 @@ const WellSingle = () => {
       });
   }, [dispatch]);
 
-  useLayoutEffect(() => {
-    return () => {
-      getData();
-      getStat();
-      return undefined;
-    };
+  useEffect(() => {
+    getData();
+    getStat();
   }, [getData, getStat]);
-  if (!item?.well_id) return loading ? <Loader /> : <NotFound />;
   const options = [
     { icon: IconWaterpolo, label: 'Suv yer sathidan', value: statistics[index]?.water_level },
     { icon: IconTemperature, label: 'Suv harorati', value: statistics[index]?.temperature },
@@ -72,7 +67,7 @@ const WellSingle = () => {
     </Paper>
   ));
 
-  return (
+  return item?.well_id ? (
     <>
       <h1>{item?.name}</h1>
       {isLoading ? (
@@ -121,9 +116,11 @@ const WellSingle = () => {
         className={classes.iframe}
         title={item.name}
         loading="lazy"
-        src={`https://maps.google.com/maps?q=${item.latitude},${item.longitude}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+        src={`https://maps.google.com/maps?q=${item?.latitude},${item?.longitude}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
       />
     </>
+  ) : (
+    <NotFound />
   );
 };
 

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Table, ScrollArea, Text, TextInput, rem, keys, Loader, Center, Button, Menu } from '@mantine/core';
 import { IconBrandGoogleMaps, IconEdit, IconSearch, IconTrash } from '@tabler/icons-react';
 import Th from './th';
@@ -48,7 +48,6 @@ export default function Wells() {
   const loading = useLoading();
   const data = useWells();
   const user = useUser();
-  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [sortedData, setSortedData] = useState(data);
   const [sortBy, setSortBy] = useState(null);
@@ -117,8 +116,8 @@ export default function Wells() {
     () =>
       sortedData.map((row) => (
         <Table.Tr key={row?.well_id}>
-          <Table.Td style={{ cursor: 'pointer' }} onClick={() => navigate(`/wells/${row?.well_id}`)}>
-            {row.name}
+          <Table.Td style={{ cursor: 'pointer' }}>
+            <Link to={`/well/${row?.well_id}`}>{row.name}</Link>
           </Table.Td>
           <Table.Td>{row.level}</Table.Td>
           <Table.Td>{row.salting}</Table.Td>
@@ -154,7 +153,7 @@ export default function Wells() {
           </Table.Td>
         </Table.Tr>
       )),
-    [sortedData, deleteWell, navigate]
+    [sortedData, deleteWell]
   );
 
   return (

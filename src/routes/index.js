@@ -16,7 +16,7 @@ const routes = [
     element: <Wells />
   },
   {
-    path: '/wells/:id',
+    path: '/well/:id',
     element: <WellSingle />
   },
   {
