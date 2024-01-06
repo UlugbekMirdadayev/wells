@@ -50,7 +50,7 @@ const openMap = (e, item) => {
   window.open(link);
 };
 
-export default function Wells() {
+export default function Rivers() {
   const dispatch = useDispatch();
   const loading = useLoading();
   const data = useWells();

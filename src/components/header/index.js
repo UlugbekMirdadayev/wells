@@ -66,6 +66,7 @@ export default function Header() {
     const allLinks = [
       { link: '/', label: 'Asosiy' },
       { link: '/wells', label: 'Quduqlar' },
+      { link: '/rivers', label: 'Daryolar' },
       user?.user_id
         ? user?.is_superuser
           ? { link: '/super-user-profile', label: 'Profile' }
@@ -103,7 +104,7 @@ export default function Header() {
   const onSelect = (v) => {
     if (pathname?.split('/')?.at(-1) === v) return null;
     setValue(v);
-    navigate(`/wells/${v}`);
+    navigate(`/well/${v}`);
     close();
   };
 
