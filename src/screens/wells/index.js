@@ -15,7 +15,7 @@ import { sendMessage } from 'components/request-modal';
 
 function filterData(data, search) {
   const query = search.toLowerCase().trim();
-  return data.filter((item) => keys(data[0]).some((key) => item[key].toLowerCase().includes(query)));
+  return data.filter((item) => keys(data[0]).some((key) => String(item[key]).toLowerCase().includes(query)));
 }
 
 function sortData(data, payload) {
@@ -123,12 +123,14 @@ export default function Wells() {
     () =>
       sortedData?.map((row, key) => (
         <Table.Tr key={row?.well_id + key}>
-          <Table.Td>
-            <Flex align={'center'}>
-              <Text pr={'lg'}>Quduq holati</Text>
-              <Indicator zIndex={1} color={row?.status ? 'blue' : 'red'} />
-            </Flex>
-          </Table.Td>
+          {user?.user_id && (
+            <Table.Td>
+              <Flex align={'center'}>
+                <Text pr={'lg'}>Quduq holati</Text>
+                <Indicator zIndex={1} color={row?.status ? 'blue' : 'red'} />
+              </Flex>
+            </Table.Td>
+          )}
           <Table.Td style={{ cursor: 'pointer' }}>
             <Link to={`/well/${row?.well_id}`}>{row?.name}</Link>
           </Table.Td>
@@ -207,9 +209,11 @@ export default function Wells() {
           >
             <Table.Tbody>
               <Table.Tr>
-                <Th sorted={sortBy === 'status'} reversed={reverseSortDirection} onSort={() => setSorting('status')}>
-                  Aktiv quduq
-                </Th>
+                {user?.user_id && (
+                  <Th sorted={sortBy === 'status'} reversed={reverseSortDirection} onSort={() => setSorting('status')}>
+                    Aktiv quduq
+                  </Th>
+                )}
                 <Th sorted={sortBy === 'name'} reversed={reverseSortDirection} onSort={() => setSorting('name')}>
                   Quduq nomi
                 </Th>
@@ -225,7 +229,7 @@ export default function Wells() {
                 rows
               ) : (
                 <Table.Tr>
-                  <Table.Td colSpan={user?.user_id ? 5 : 4}>
+                  <Table.Td colSpan={user?.user_id ? 6 : 5}>
                     <Text fw={500} ta="center">
                       Quduqlar topilmadi
                     </Text>

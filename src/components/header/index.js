@@ -66,7 +66,7 @@ export default function Header() {
     const allLinks = [
       { link: '/', label: 'Asosiy' },
       { link: '/wells', label: 'Quduqlar' },
-      { link: '/rivers', label: 'Daryolar' },
+      // { link: '/rivers', label: 'Daryolar' },
       user?.user_id
         ? user?.is_superuser
           ? { link: '/super-user-profile', label: 'Profile' }

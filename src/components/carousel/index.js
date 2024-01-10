@@ -18,22 +18,22 @@ const data = [
     category: 'nature'
   },
   {
-    image: require('../../assets/img/slider-img-4.png'),
+    image: require('../../assets/img/slider-img-1.jpg'),
     title: 'Hawaii beaches review: better than you think',
     category: 'beach'
   },
   {
-    image: require('../../assets/img/slider-img-1.jpg'),
+    image: require('../../assets/img/slider-img-2.jpg'),
     title: 'Mountains at night: 12 best locations to enjoy the view',
     category: 'nature'
   },
   {
-    image: require('../../assets/img/slider-img-2.jpg'),
+    image: require('../../assets/img/slider-img-3.jpg'),
     title: 'Aurora in Norway: when to visit for best experience',
     category: 'nature'
   },
   {
-    image: require('../../assets/img/slider-img-3.jpg'),
+    image: require('../../assets/img/slider-img-4.png'),
     title: 'Best places to visit this winter',
     category: 'tourism'
   },
